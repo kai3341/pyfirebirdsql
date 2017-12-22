@@ -372,7 +372,7 @@ class TestBasic(TestBase):
         For FB4
         """
         cur = self.connection.cursor()
-        cur.execute("CREATE TABLE decfloat_test (df64, df128 decfloat(16), decfloat(34))")
+        cur.execute("CREATE TABLE decfloat_test (df64 decfloat(16), df128 decfloat(34))")
         cur.close()
         self.connection.commit()
 
