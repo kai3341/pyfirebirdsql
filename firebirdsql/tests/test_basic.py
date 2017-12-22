@@ -377,8 +377,9 @@ class TestBasic(TestBase):
         self.connection.commit()
 
         cur = self.connection.cursor()
-        cur.execute("insert into decfloat_test(df64, df128, s) values (1.0, 1.0, 'a')")
-        cur.execute("insert into decfloat_test(df64, df128, s) values (2.0, 2.0, 'b')")
+        cur.execute("insert into decfloat_test(df64, df128, s) values (0.0, 0.0, 'a')")
+        cur.execute("insert into decfloat_test(df64, df128, s) values (1.0, 1.0, 'b')")
+        cur.execute("insert into decfloat_test(df64, df128, s) values (2.0, 2.0, 'c')")
         cur.close()
 
         cur = self.connection.cursor()
