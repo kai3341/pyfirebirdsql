@@ -366,3 +366,27 @@ class TestBasic(TestBase):
 
         self.connection.close()
 
+#    @unittest.skip("FB 4")
+    def test_decfloat(self):
+        """
+        For FB4
+        """
+        cur = self.connection.cursor()
+        cur.execute("CREATE TABLE decfloat_test (df64, df128 decfloat(16), decfloat(34))")
+        cur.close()
+        self.connection.commit()
+
+        cur = self.connection.cursor()
+        cur.execute("insert into decfloat_test(df64, df128) values (1.0, 2.0)")
+        cur.close()
+
+        cur = self.connection.cursor()
+        cur.execute("select * from decfloat_test")
+        df64, df128 = cur.fetchone()
+        cur.close()
+        print(df64)
+        print(df128)
+
+
+        self.connection.close()
+

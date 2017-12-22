@@ -47,6 +47,8 @@ class XSQLVAR:
         SQL_TYPE_ARRAY: 8,
         SQL_TYPE_QUAD: 8,
         SQL_TYPE_INT64: 8,
+        SQL_TYPE_DEC64 : 8,
+        SQL_TYPE_DEC128 : 16,
         SQL_TYPE_BOOLEAN: 1,
         }
 
@@ -63,6 +65,8 @@ class XSQLVAR:
         SQL_TYPE_ARRAY: -1,
         SQL_TYPE_QUAD: 20,
         SQL_TYPE_INT64: 20,
+        SQL_TYPE_DEC64: 16,
+        SQL_TYPE_DEC128: 34,
         SQL_TYPE_BOOLEAN: 5,
         }
 
@@ -160,6 +164,12 @@ class XSQLVAR:
             return struct.unpack('!f', raw_value)[0]
         elif self.sqltype == SQL_TYPE_DOUBLE:
             return struct.unpack('!d', raw_value)[0]
+        elif self.sqltype == SQL_TYPE_DEC64:
+            import numpy as np
+            return np.frombuffer(raw_value, dtype=np.float64)
+        elif self.sqltype == SQL_TYPE_DEC128:
+            import numpy as np
+            return np.frombuffer(raw_value, dtype=np.float128)
         elif self.sqltype == SQL_TYPE_BOOLEAN:
             return True if byte_to_int(raw_value[0]) != 0 else False
         else:
@@ -176,6 +186,8 @@ sqltype2blr = {
     SQL_TYPE_BLOB: [9, 0],
     SQL_TYPE_ARRAY: [9, 0],
     SQL_TYPE_BOOLEAN: [23],
+    SQL_TYPE_DEC64: [24],
+    SQL_TYPE_DEC128: [25],
     }
 
 
