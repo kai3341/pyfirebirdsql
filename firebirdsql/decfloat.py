@@ -1,4 +1,5 @@
 from decimal import Decimal
+from firebirdsql import srp
 
 def from_decimal128(d):
     "from Decimal to decimal128 binary"
@@ -30,12 +31,13 @@ def from_decimal128(d):
 
 def to_decimal128(b):
     "decimal 128 bytes to Decimal"
-    sign = 1 if (b[-1] & 0x80) else 0
-    if (b[-1] & 0x60) == 0x60:
-        exponent = to_uint(bytes([b[-2], b[-1] & 0x1f])) * 2 - 6176
+    sign = 1 if (b[0] & 0x80) else 0
+    if (b[0] & 0x60) == 0x60:
+        exponent = ((b[0] & 0x1f) * 256 + b[1]) * 2 - 6176
     else:
-        exponent = to_uint(bytes([b[-2], b[-1] & 0x7f])) // 2 - 6176
-    digits = to_uint(b[:-2])
+        exponent = ((b[0] & 0x7f) * 256 + b[1]) // 2 - 6176
+    digits = srp.bytes2long(b[2:])
+    print(sign, exponent, digits)
     v = {
         (0, 0, 8160): Decimal('NaN'),
         (1, 0, 8160): Decimal('-NaN'),
