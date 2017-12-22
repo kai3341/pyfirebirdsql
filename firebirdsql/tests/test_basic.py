@@ -380,6 +380,8 @@ class TestBasic(TestBase):
         cur.execute("insert into decfloat_test(df64, df128, s) values (0.0, 0.0, 'a')")
         cur.execute("insert into decfloat_test(df64, df128, s) values (1.0, 1.0, 'b')")
         cur.execute("insert into decfloat_test(df64, df128, s) values (2.0, 2.0, 'c')")
+        cur.execute("insert into decfloat_test(df64, df128, s) values (-1.0, -1.0, 'd')")
+        cur.execute("insert into decfloat_test(df64, df128, s) values (-2.0, -2.0, 'e')")
         cur.close()
 
         cur = self.connection.cursor()
