@@ -372,20 +372,20 @@ class TestBasic(TestBase):
         For FB4
         """
         cur = self.connection.cursor()
-        cur.execute("CREATE TABLE decfloat_test (df64 decfloat(16), df128 decfloat(34))")
+        cur.execute("CREATE TABLE decfloat_test (df64 decfloat(16), df128 decfloat(34), s varchar(32))")
         cur.close()
         self.connection.commit()
 
         cur = self.connection.cursor()
-        cur.execute("insert into decfloat_test(df64, df128) values (1.0, 2.0)")
+        cur.execute("insert into decfloat_test(df64, df128, s) values (1.0, 1.0, 'a')")
+        cur.execute("insert into decfloat_test(df64, df128, s) values (2.0, 2.0, 'b')")
         cur.close()
 
         cur = self.connection.cursor()
         cur.execute("select * from decfloat_test")
-        df64, df128 = cur.fetchone()
+        for df64, df128, s in cur.fetchall():
+            print(df64, df128, s)
         cur.close()
-        print(df64)
-        print(df128)
 
 
         self.connection.close()
