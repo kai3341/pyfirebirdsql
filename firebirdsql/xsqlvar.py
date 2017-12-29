@@ -187,6 +187,7 @@ sqltype2blr = {
     SQL_TYPE_BOOLEAN: [23],
     SQL_TYPE_DEC64: [24],
     SQL_TYPE_DEC128: [25],
+    SQL_TYPE_DEC_FIXED: [26],
     }
 
 

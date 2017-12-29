@@ -372,20 +372,26 @@ class TestBasic(TestBase):
         For FB4
         """
         cur = self.connection.cursor()
-        cur.execute("CREATE TABLE decfloat_test (df64 decfloat(16), df128 decfloat(34), s varchar(32))")
+        cur.execute('''
+            CREATE TABLE dec_test (
+                d DECIMAL(20, 2),
+                df64 DECFLOAT(16),
+                df128 DECFLOAT(34),
+                s varchar(32))
+        ''')
         cur.close()
         self.connection.commit()
 
         cur = self.connection.cursor()
-        cur.execute("insert into decfloat_test(df64, df128, s) values (0.0, 0.0, '0.0')")
-        cur.execute("insert into decfloat_test(df64, df128, s) values (1.0, 1.0, '1.0')")
-        cur.execute("insert into decfloat_test(df64, df128, s) values (20.0, 20.0, '20.0')")
-        cur.execute("insert into decfloat_test(df64, df128, s) values (-1.0, -1.0, '-1.0')")
-        cur.execute("insert into decfloat_test(df64, df128, s) values (-20.0, -20.0, '-20.0')")
+        cur.execute("insert into dec_test(d, df64, df128, s) values (0.0, 0.0, 0.0, '0.0')")
+        cur.execute("insert into dec_test(d, df64, df128, s) values (1.0, 1.0, 1.0, '1.0')")
+        cur.execute("insert into dec_test(d, df64, df128, s) values (20.0, 20.0, 20.0, '20.0')")
+        cur.execute("insert into dec_test(d, df64, df128, s) values (-1.0, -1.0, -1.0, '-1.0')")
+        cur.execute("insert into dec_test(d, df64, df128, s) values (-20.0, -20.0, -20.0, '-20.0')")
         cur.close()
 
         cur = self.connection.cursor()
-        cur.execute("select * from decfloat_test")
+        cur.execute("select * from dec_test")
         for df64, df128, s in cur.fetchall():
             print(df64, df128, s)
         cur.close()
