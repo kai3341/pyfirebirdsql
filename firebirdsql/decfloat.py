@@ -2,8 +2,18 @@ from decimal import Decimal
 from firebirdsql import srp
 from firebirdsql.utils import *
 
-def to_decimal128(b):
-    "decimal 128 bytes to Decimal"
+
+def decimal64_to_decimal(b):
+    "decimal64 bytes to Decimal"
+    # https://en.wikipedia.org/wiki/Decimal64_floating-point_format#Densely_packed_decimal_significand_field
+    print()
+    for c in b:
+        print(bin(byte_to_int(c)), end=' ')
+    print()
+    return b
+
+def decimal128_to_decimal(b):
+    "decimal128 bytes to Decimal"
     # https://en.wikipedia.org/wiki/Decimal128_floating-point_format#Densely_packed_decimal_significand_field
     print()
     for c in b:
