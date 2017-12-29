@@ -166,13 +166,9 @@ class XSQLVAR:
         elif self.sqltype == SQL_TYPE_DOUBLE:
             return struct.unpack('!d', raw_value)[0]
         elif self.sqltype == SQL_TYPE_DEC64:
-            import binascii
-            print(binascii.b2a_hex(raw_value))
             import numpy as np
             return np.frombuffer(raw_value, dtype=np.float64)[0]
         elif self.sqltype == SQL_TYPE_DEC128:
-            import binascii
-            print(binascii.b2a_hex(raw_value))
             return decfloat.to_decimal128(raw_value)
         elif self.sqltype == SQL_TYPE_BOOLEAN:
             return True if byte_to_int(raw_value[0]) != 0 else False
