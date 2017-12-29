@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from decimal import Decimal
 from firebirdsql import srp
 from firebirdsql.utils import *
