@@ -1195,6 +1195,12 @@ def _calc_blr(xsqlda):  # calc from sqlda to BLR format data.
             blr += [9, x.sqlscale]
         elif x.get_type_name() == 'SQL_BOOLEAN':
             blr += [23]
+        elif x.get_type_name() == 'SQL_DEC64':
+            blr += [24]
+        elif x.get_type_name() == 'SQL_DEC128':
+            blr += [25]
+        elif x.get_type_name() == 'SQL_DEC_FIXED':
+            blr += [26]
         blr += [7, 0]   # [blr_short, 0]
     blr += [255, 76]    # [blr_end, blr_eoc]
 
