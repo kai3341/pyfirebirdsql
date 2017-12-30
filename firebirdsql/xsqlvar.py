@@ -33,6 +33,16 @@ from firebirdsql.utils import *
 from firebirdsql.wireprotocol import INFO_SQL_SELECT_DESCRIBE_VARS
 from firebirdsql import decfloat
 
+def bcd_to_int(b):
+    v = 0
+    for c in b:
+        b1 = (byte_to_int(c) >> 4) & 0x0f
+        b2 = byte_to_int(c) & 0x0f
+        if b1 or b2:
+            print(b1, b2)
+        v = v * 100 + b1 * 10 + b2
+    return v
+
 
 class XSQLVAR:
     type_length = {
@@ -170,8 +180,11 @@ class XSQLVAR:
         elif self.sqltype == SQL_TYPE_BOOLEAN:
             return True if byte_to_int(raw_value[0]) != 0 else False
         elif self.sqltype == SQL_TYPE_DEC_FIXED:
-            print('sqlscale=', self.sqlscale)
-            n = bytes_to_ulong(raw_value)
+            # https://github.com/FirebirdSQL/firebird/blob/master/extern/decNumber/decQuad.h
+            import binascii
+            n = bcd_to_int(raw_value[2:])
+            if byte_to_int(raw_value[0]) & 0x80:
+                n *= -1
             if self.sqlscale:
                 return decimal.Decimal(str(n) + 'e' + str(self.sqlscale))
             else:

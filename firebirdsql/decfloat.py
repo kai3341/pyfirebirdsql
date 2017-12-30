@@ -24,10 +24,10 @@ def decimal128_to_decimal(b):
     sign = 1 if (byte_to_int(b[0]) & 0x80) else 0
     combination = ((byte_to_int(b[0]) & 0x7f) << 10) + (byte_to_int(b[1]) << 2) + (byte_to_int(b[2]) >> 6)
 
-    if (b[0] & 0x60) == 0x60:
-        exponent = ((b[0] & 0x1f) * 256 + b[1]) * 2 - 6176
+    if (byte_to_int(b[0]) & 0x60) == 0x60:
+        exponent = ((byte_to_int(b[0]) & 0x1f) * 256 + byte_to_int(b[1])) * 2 - 6176
     else:
-        exponent = ((b[0] & 0x7f) * 256 + b[1]) // 2 - 6176
+        exponent = ((byte_to_int(b[0]) & 0x7f) * 256 + byte_to_int(b[1])) // 2 - 6176
 
     digits = srp.bytes2long(b) & 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 
