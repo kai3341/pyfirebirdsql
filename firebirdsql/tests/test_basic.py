@@ -392,8 +392,8 @@ class TestBasic(TestBase):
 
         cur = self.connection.cursor()
         cur.execute("select * from dec_test")
-        for df64, df128, s in cur.fetchall():
-            print(df64, df128, s)
+        for d, df64, df128, s in cur.fetchall():
+            print(d, df64, df128, s)
         cur.close()
 
 

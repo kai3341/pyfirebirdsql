@@ -50,7 +50,7 @@ class XSQLVAR:
         SQL_TYPE_INT64: 8,
         SQL_TYPE_DEC64 : 8,
         SQL_TYPE_DEC128 : 16,
-        SQL_TYPE_DEC_FIXED: -1,
+        SQL_TYPE_DEC_FIXED: 16,
         SQL_TYPE_BOOLEAN: 1,
         }
 
@@ -167,12 +167,19 @@ class XSQLVAR:
             return struct.unpack('!f', raw_value)[0]
         elif self.sqltype == SQL_TYPE_DOUBLE:
             return struct.unpack('!d', raw_value)[0]
+        elif self.sqltype == SQL_TYPE_BOOLEAN:
+            return True if byte_to_int(raw_value[0]) != 0 else False
+        elif self.sqltype == SQL_TYPE_DEC_FIXED:
+            print('sqlscale=', self.sqlscale)
+            n = bytes_to_ulong(raw_value)
+            if self.sqlscale:
+                return decimal.Decimal(str(n) + 'e' + str(self.sqlscale))
+            else:
+                return n
         elif self.sqltype == SQL_TYPE_DEC64:
             return decfloat.decimal64_to_decimal(raw_value)
         elif self.sqltype == SQL_TYPE_DEC128:
             return decfloat.decimal128_to_decimal(raw_value)
-        elif self.sqltype == SQL_TYPE_BOOLEAN:
-            return True if byte_to_int(raw_value[0]) != 0 else False
         else:
             return raw_value
 
@@ -189,7 +196,6 @@ sqltype2blr = {
     SQL_TYPE_BOOLEAN: [23],
     SQL_TYPE_DEC64: [24],
     SQL_TYPE_DEC128: [25],
-    SQL_TYPE_DEC_FIXED: [26],
     }
 
 
@@ -211,6 +217,8 @@ def calc_blr(xsqlda):
             blr += [16, x.sqlscale]
         elif sqltype == SQL_TYPE_QUAD:
             blr += [9, x.sqlscale]
+        elif sqltype == SQL_TYPE_DEC_FIXED:
+            blr += [26, x.sqlscale]
         else:
             blr += sqltype2blr[sqltype]
         blr += [7, 0]   # [blr_short, 0]
