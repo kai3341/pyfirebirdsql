@@ -50,6 +50,7 @@ class XSQLVAR:
         SQL_TYPE_INT64: 8,
         SQL_TYPE_DEC64 : 8,
         SQL_TYPE_DEC128 : 16,
+        SQL_TYPE_DEC_FIXED: -1,
         SQL_TYPE_BOOLEAN: 1,
         }
 
@@ -68,6 +69,7 @@ class XSQLVAR:
         SQL_TYPE_INT64: 20,
         SQL_TYPE_DEC64: 16,
         SQL_TYPE_DEC128: 34,
+        SQL_TYPE_DEC_FIXED: 34,
         SQL_TYPE_BOOLEAN: 5,
         }
 
