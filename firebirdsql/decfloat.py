@@ -29,9 +29,9 @@ def decimal128_to_decimal(b):
     else:
         exponent = ((byte_to_int(b[0]) & 0x7f) * 256 + byte_to_int(b[1])) // 2 - 6176
 
-    digits = srp.bytes2long(b) & 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+    dpd = srp.bytes2long(b) & 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 
-    print('sign<%s>combination<%s>digits<%s>' %  (bin(sign), bin(combination), bin(digits)))
+    print('sign<%s>combination<%s>dpd<%s>' %  (bin(sign), bin(combination), bin(dpd)))
     v = {
         (0, 0, 8160): Decimal('NaN'),
         (1, 0, 8160): Decimal('-NaN'),
@@ -39,7 +39,7 @@ def decimal128_to_decimal(b):
         (1, 0, 9184): Decimal('-sNaN'),
         (0, 0, 6112): Decimal('Infinity'),
         (1, 0, 6112): Decimal('-Infinity'),
-    }.get((sign, digits, exponent))
+    }.get((sign, dpd, exponent))
     if v:
         return v
-    return Decimal((sign, Decimal(digits).as_tuple()[1], exponent))
+    return Decimal((sign, Decimal(dpd).as_tuple()[1], exponent))
