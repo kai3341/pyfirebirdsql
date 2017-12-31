@@ -1,11 +1,40 @@
+##############################################################################
+# Copyright (c) 2018, Hajime Nakagami<nakagami@gmail.com>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#  this list of conditions and the following disclaimer in the documentation
+#  and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# Python DB-API 2.0 module for Firebird.
+##############################################################################
 import sys
 from decimal import Decimal
 
 PYTHON_MAJOR_VER = sys.version_info[0]
 
+
 if PYTHON_MAJOR_VER == 3:
     def ord(c):
         return c
+
 
 def bytes2long(b):
     n = 0
@@ -14,7 +43,8 @@ def bytes2long(b):
         n += ord(c)
     return n
 
-def dpd2int(dpd):
+
+def dpd_to_int(dpd):
     """
     Convert DPD encodined value to int (0-999)
     dpd: DPD encoded value. 10bit unsigned int
@@ -68,6 +98,26 @@ def dpd2int(dpd):
         raise ValueError('Invalid DPD encoding')
 
     return d[2] * 100 + d[1] * 10 + d[0]
+
+
+def calc_significand(prefix, dpd_bits, num_bits):
+    """
+    prefix: High bits integer value
+    dpd_bits: dpd encoded bits
+    num_bits: bit length of dpd_bits
+    """
+    num_segments = num_bits // 10
+    segments = []
+    for i in range(num_segments):
+        segments.append(dpd_bits & 0b1111111111)
+        dpd_bits >>= 10
+    segments.reverse()
+
+    v = prefix
+    for dpd in segments:
+        v = v << 10 + dpd_to_int(dpd)
+
+    return v
 
 
 def decimal64_to_decimal(b):
