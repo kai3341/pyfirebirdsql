@@ -134,31 +134,22 @@ def _decimal128_to_sign_digits_exponent(b):
             return Decimal('Infinity')
     elif (combination_field & 0b11000000000000000) == 0b00000000000000000:
         exponent = 0b00000000000000 + (combination_field & 0b111111111111)
-        significand_prefix = (combination_field & 0b00111000000000000) >> 12
+        significand_prefix = (combination_field >> 12) & 0b111
     elif (combination_field & 0b11000000000000000) == 0b01000000000000000:
         exponent = 0b01000000000000 + (combination_field & 0b111111111111)
-        significand_prefix = (combination_field & 0b00111000000000000) >> 12
+        significand_prefix = (combination_field >> 12) & 0b111
     elif (combination_field & 0b11000000000000000) == 0b10000000000000000:
         exponent = 0b10000000000000 + (combination_field & 0b111111111111)
-        significand_prefix = (combination_field & 0b00111000000000000) >> 12
+        significand_prefix = (combination_field >> 12) & 0b111
     elif (combination_field & 0b11110000000000000) == 0b11000000000000000:
         exponent = 0b00000000000000 + (combination_field & 0b111111111111)
-        if combination_field & 0b00001000000000000:
-            significand_prefix = 9
-        else:
-            significand_prefix = 8
+        significand_prefix = 8 + (combination_field >> 12) & 0b1
     elif (combination_field & 0b11110000000000000) == 0b11010000000000000:
         exponent = 0b01000000000000 + (combination_field & 0b111111111111)
-        if combination_field & 0b00001000000000000:
-            significand_prefix = 9
-        else:
-            significand_prefix = 8
+        significand_prefix = 8 + (combination_field >> 12) & 0b1
     elif (combination_field & 0b11110000000000000) == 0b11100000000000000:
         exponent = 0b10000000000000 + (combination_field & 0b111111111111)
-        if combination_field & 0b00001000000000000:
-            significand_prefix = 9
-        else:
-            significand_prefix = 8
+        significand_prefix = 8 + (combination_field >> 12) & 0b1
     else:
         raise ValueError('decimal128 value error')
     exponent -= 6176
