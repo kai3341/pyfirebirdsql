@@ -167,8 +167,40 @@ def decimal_fixed_to_decimal(b, scale):
 def decimal64_to_decimal(b):
     "decimal64 bytes to Decimal"
     # https://en.wikipedia.org/wiki/Decimal64_floating-point_format
-    # TODO: IMPLEMENT
-    return b
+    sign = 1 if ord(b[0]) & 0x80 else 0
+    combination_field = ord(b[0] >> 2) & 0b11111
+    exponent = ((ord(b[0]) & 0b11) << 6) + ((ord(b[1]) >> 2) & 0b111111)
+    dpd_bits = bytes2long(b) & 0b11111111111111111111111111111111111111111111111111
+    if combination_field == 0b11111:
+        return Decimal('NaN')
+    elif (combination_field & 0b1110) == 0b1110:
+        if sign:
+            return Decimal('-Infinity')
+        else:
+            return Decimal('Infinity')
+    elif (combination_field & 0b11000) == 0b00000:
+        exponent = 0b0000000000 + exponent
+        significand_prefix = combination_field & 0b111
+    elif (combination_field & 0b11000) == 0b01000:
+        exponent = 0b0100000000 + exponent
+        significand_prefix = combination_field & 0b111
+    elif (combination_field & 0b11000) == 0b10000:
+        exponent = 0b1000000000 + exponent
+        significand_prefix = combination_field & 0b111
+    elif (combination_field & 0b11110) == 0b11000:
+        exponent = 0b0000000000 + exponent
+        significand_prefix = 8 + combination_field & 0b1
+    elif (combination_field & 0b11110) == 0b11010:
+        exponent = 0b0100000000 + exponent
+        significand_prefix = 8 + combination_field & 0b1
+    elif (combination_field & 0b11110) == 0b11100:
+        exponent = 0b1000000000 + exponent
+        significand_prefix = 8 + combination_field & 0b1
+    else:
+        raise ValueError('decimal64 value error')
+    digits = calc_significand(significand_prefix, dpd_bits, 50)
+    exponent -= 398
+    return Decimal((sign, Decimal(digits).as_tuple()[1], exponent))
 
 
 def decimal128_to_decimal(b):

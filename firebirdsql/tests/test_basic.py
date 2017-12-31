@@ -366,7 +366,7 @@ class TestBasic(TestBase):
 
         self.connection.close()
 
-    # @unittest.skip("FB 4")
+    @unittest.skip("FB 4")
     def test_decfloat(self):
         """
         For FB4
@@ -393,7 +393,10 @@ class TestBasic(TestBase):
         cur = self.connection.cursor()
         cur.execute("select * from dec_test")
         for d, df64, df128, s in cur.fetchall():
-            print(d, df64, df128, s)
+            val = Decimal(s)
+            self.assertEqual(d, val)
+            self.assertEqual(df64, val)
+            self.assertEqual(df128, val)
         cur.close()
 
 
