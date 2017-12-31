@@ -116,7 +116,7 @@ def calc_significand(prefix, dpd_bits, num_bits):
 
     v = prefix
     for dpd in segments:
-        v = (v << 10) + dpd_to_int(dpd)
+        v = v * 1000 + dpd_to_int(dpd)
 
     return v
 
