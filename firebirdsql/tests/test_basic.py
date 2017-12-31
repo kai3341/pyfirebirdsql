@@ -366,7 +366,7 @@ class TestBasic(TestBase):
 
         self.connection.close()
 
-    @unittest.skip("FB 4")
+    # @unittest.skip("FB 4")
     def test_decfloat(self):
         """
         For FB4
