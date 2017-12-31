@@ -33,16 +33,6 @@ from firebirdsql.utils import *
 from firebirdsql.wireprotocol import INFO_SQL_SELECT_DESCRIBE_VARS
 from firebirdsql import decfloat
 
-def bcd_to_int(b):
-    v = 0
-    for c in b:
-        b1 = (byte_to_int(c) >> 4) & 0x0f
-        b2 = byte_to_int(c) & 0x0f
-        if b1 or b2:
-            print(b1, b2)
-        v = v * 100 + b1 * 10 + b2
-    return v
-
 
 class XSQLVAR:
     type_length = {

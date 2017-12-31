@@ -76,13 +76,6 @@ def bytes_to_int(b):        # Read as little endian.
         raise InternalError("Invalid data length")
     return struct.unpack(fmt, b)[0]
 
-def bytes_to_ulong(b):      # Read as unsigned little endigan long
-    n = 0
-    for c in reversed(b):
-        n <<= 8
-        n += byte_to_int(c)
-    return n
-
 def bint_to_bytes(val, nbytes):     # Convert int value to big endian bytes.
     v = abs(val)
     b = []

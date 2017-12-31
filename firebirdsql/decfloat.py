@@ -1,35 +1,37 @@
-from __future__ import print_function
-
+import sys
 from decimal import Decimal
-from firebirdsql import srp
-from firebirdsql.utils import *
+
+PYTHON_MAJOR_VER = sys.version_info[0]
+
+if PYTHON_MAJOR_VER == 3:
+    def ord(c):
+        return c
+
+def bytes2long(b):
+    n = 0
+    for c in b:
+        n <<= 8
+        n += ord(c)
+    return n
 
 
 def decimal64_to_decimal(b):
     "decimal64 bytes to Decimal"
     # https://en.wikipedia.org/wiki/Decimal64_floating-point_format#Densely_packed_decimal_significand_field
-    print()
-    for c in b:
-        print(bin(byte_to_int(c)), end=' ')
-    print()
     return b
 
 def decimal128_to_decimal(b):
     "decimal128 bytes to Decimal"
     # https://en.wikipedia.org/wiki/Decimal128_floating-point_format#Densely_packed_decimal_significand_field
-    print()
-    for c in b:
-        print(bin(byte_to_int(c)), end=' ')
-    print()
-    sign = 1 if (byte_to_int(b[0]) & 0x80) else 0
-    combination = ((byte_to_int(b[0]) & 0x7f) << 10) + (byte_to_int(b[1]) << 2) + (byte_to_int(b[2]) >> 6)
+    sign = 1 if ord(b[0]) & 0x80 else 0
+    combination = ((ord(b[0]) & 0x7f) << 10) + (ord(b[1]) << 2) + (ord(b[2]) >> 6)
 
-    if (byte_to_int(b[0]) & 0x60) == 0x60:
-        exponent = ((byte_to_int(b[0]) & 0x1f) * 256 + byte_to_int(b[1])) * 2 - 6176
+    if (ord(b[0]) & 0x60) == 0x60:
+        exponent = ((ord(b[0]) & 0x1f) * 256 + ord(b[1])) * 2 - 6176
     else:
-        exponent = ((byte_to_int(b[0]) & 0x7f) * 256 + byte_to_int(b[1])) // 2 - 6176
+        exponent = ((ord(b[0]) & 0x7f) * 256 + ord(b[1])) // 2 - 6176
 
-    dpd = srp.bytes2long(b) & 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+    dpd = bytes2long(b) & 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 
     print('sign<%s>combination<%s>dpd<%s>' %  (bin(sign), bin(combination), bin(dpd)))
     v = {
