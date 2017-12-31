@@ -124,11 +124,13 @@ def calc_significand(prefix, dpd_bits, num_bits):
 def decimal64_to_decimal(b):
     "decimal64 bytes to Decimal"
     # https://en.wikipedia.org/wiki/Decimal64_floating-point_format
+    # TODO: IMPLEMENT
     return b
 
 def decimal128_to_decimal(b):
     "decimal128 bytes to Decimal"
     # https://en.wikipedia.org/wiki/Decimal128_floating-point_format
+    # TODO: FIX
     sign = 1 if ord(b[0]) & 0x80 else 0
     combination = ((ord(b[0]) & 0x7f) << 10) + (ord(b[1]) << 2) + (ord(b[2]) >> 6)
 
