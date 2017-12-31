@@ -106,6 +106,7 @@ def calc_significand(prefix, dpd_bits, num_bits):
     dpd_bits: dpd encoded bits
     num_bits: bit length of dpd_bits
     """
+    # https://en.wikipedia.org/wiki/Decimal128_floating-point_format#Densely_packed_decimal_significand_field
     num_segments = num_bits // 10
     segments = []
     for i in range(num_segments):
@@ -122,12 +123,12 @@ def calc_significand(prefix, dpd_bits, num_bits):
 
 def decimal64_to_decimal(b):
     "decimal64 bytes to Decimal"
-    # https://en.wikipedia.org/wiki/Decimal64_floating-point_format#Densely_packed_decimal_significand_field
+    # https://en.wikipedia.org/wiki/Decimal64_floating-point_format
     return b
 
 def decimal128_to_decimal(b):
     "decimal128 bytes to Decimal"
-    # https://en.wikipedia.org/wiki/Decimal128_floating-point_format#Densely_packed_decimal_significand_field
+    # https://en.wikipedia.org/wiki/Decimal128_floating-point_format
     sign = 1 if ord(b[0]) & 0x80 else 0
     combination = ((ord(b[0]) & 0x7f) << 10) + (ord(b[1]) << 2) + (ord(b[2]) >> 6)
 
