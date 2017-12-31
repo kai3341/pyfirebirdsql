@@ -121,18 +121,10 @@ def calc_significand(prefix, dpd_bits, num_bits):
     return v
 
 
-def decimal64_to_decimal(b):
-    "decimal64 bytes to Decimal"
-    # https://en.wikipedia.org/wiki/Decimal64_floating-point_format
-    # TODO: IMPLEMENT
-    return b
-
-def decimal128_to_decimal(b):
-    "decimal128 bytes to Decimal"
+def _decimal128_to_sign_digits_exponent(b):
     # https://en.wikipedia.org/wiki/Decimal128_floating-point_format
     sign = 1 if ord(b[0]) & 0x80 else 0
     combination_field = ((ord(b[0]) & 0x7f) << 10) + (ord(b[1]) << 2) + (ord(b[2]) >> 6)
-    print('combination_field<%s>' % bin(combination_field))
     if (combination_field & 0b11111000000000000) == 0b11111000000000000:
         return Decimal('NaN')
     elif (combination_field & 0b11111000000000000) == 0b11110000000000000:
@@ -141,12 +133,29 @@ def decimal128_to_decimal(b):
         else:
             return Decimal('Infinity')
     elif (combination_field & 0b11000000000000000) == 0b11000000000000000:
-        exponent = (combination_field & 0b0011111111111111110) >> 1
+        exponent = (combination_field & 0b00111111111111110) >> 1
         significand_prefix = 8 + (combination_field & 0b1)
     else:
-        exponent = (combination_field & 0b1111111111111111000) >> 3
-        significand_prefix = combination_field & 0b0000000000000000111
+        exponent = (combination_field & 0b11111111111111000) >> 3
+        significand_prefix = combination_field & 0b111
     dpd_bits = bytes2long(b) & 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
     digits = calc_significand(significand_prefix, dpd_bits, 110)
-    print('sign,digits,exponent', sign, digits, exponent)
-    return Decimal((sign, Decimal(digits).as_tuple()[1], exponent))
+    return sign, digits, exponent
+
+
+def decimal_fixed_to_decimal(b, scale):
+    sign, digits, _ = _decimal128_to_sign_digits_exponent(b)
+    return Decimal((sign, Decimal(digits).as_tuple()[1], scale))
+
+
+def decimal64_to_decimal(b):
+    "decimal64 bytes to Decimal"
+    # https://en.wikipedia.org/wiki/Decimal64_floating-point_format
+    # TODO: IMPLEMENT
+    return b
+
+
+def decimal128_to_decimal(b):
+    "decimal128 bytes to Decimal"
+    sign, digits, exponent = _decimal128_to_sign_digits_exponent(b)
+    return Decimal((sign, Decimal(digits).as_tuple()[1], exponent-6176))
