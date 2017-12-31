@@ -116,7 +116,7 @@ def calc_significand(prefix, dpd_bits, num_bits):
 
     v = prefix
     for dpd in segments:
-        v = v << 10 + dpd_to_int(dpd)
+        v = (v << 10) + dpd_to_int(dpd)
 
     return v
 
@@ -148,5 +148,5 @@ def decimal128_to_decimal(b):
         significand_prefix = combination_field & 0b0000000000000000111
     dpd_bits = bytes2long(b) & 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
     digits = calc_significand(significand_prefix, dpd_bits, 110)
-
+    print('sign,digits,exponent', sign, digits, exponent)
     return Decimal((sign, Decimal(digits).as_tuple()[1], exponent))
