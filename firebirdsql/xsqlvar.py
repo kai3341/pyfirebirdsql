@@ -171,7 +171,7 @@ class XSQLVAR:
             return True if byte_to_int(raw_value[0]) != 0 else False
         elif self.sqltype == SQL_TYPE_DEC_FIXED:
             # https://github.com/FirebirdSQL/firebird/blob/master/extern/decNumber/decQuad.h
-            return decfloat.decimal128_to_decimal(raw_value)
+            return decfloat.decimal128_to_decimal(raw_value) ** self.sqlscale
         elif self.sqltype == SQL_TYPE_DEC64:
             return decfloat.decimal64_to_decimal(raw_value)
         elif self.sqltype == SQL_TYPE_DEC128:
