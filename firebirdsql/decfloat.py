@@ -130,26 +130,23 @@ def decimal64_to_decimal(b):
 def decimal128_to_decimal(b):
     "decimal128 bytes to Decimal"
     # https://en.wikipedia.org/wiki/Decimal128_floating-point_format
-    # TODO: FIX
     sign = 1 if ord(b[0]) & 0x80 else 0
-    combination = ((ord(b[0]) & 0x7f) << 10) + (ord(b[1]) << 2) + (ord(b[2]) >> 6)
-
-    if (ord(b[0]) & 0x60) == 0x60:
-        exponent = ((ord(b[0]) & 0x1f) * 256 + ord(b[1])) * 2 - 6176
+    combination_field = ((ord(b[0]) & 0x7f) << 10) + (ord(b[1]) << 2) + (ord(b[2]) >> 6)
+    print('combination_field<%s>' % bin(combination_field))
+    if (combination_field & 0b11111000000000000) == 0b11111000000000000:
+        return Decimal('NaN')
+    elif (combination_field & 0b11111000000000000) == 0b11110000000000000:
+        if sign:
+            return Decimal('-Infinity')
+        else:
+            return Decimal('Infinity')
+    elif (combination_field & 0b11000000000000000) == 0b11000000000000000:
+        exponent = (combination_field & 0b0011111111111111110) >> 1
+        significand_prefix = 8 + (combination_field & 0b1)
     else:
-        exponent = ((ord(b[0]) & 0x7f) * 256 + ord(b[1])) // 2 - 6176
+        exponent = (combination_field & 0b1111111111111111000) >> 3
+        significand_prefix = combination_field & 0b0000000000000000111
+    dpd_bits = bytes2long(b) & 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+    digits = calc_significand(significand_prefix, dpd_bits, 110)
 
-    dpd = bytes2long(b) & 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-
-    print('sign<%s>combination<%s>dpd<%s>' %  (bin(sign), bin(combination), bin(dpd)))
-    v = {
-        (0, 0, 8160): Decimal('NaN'),
-        (1, 0, 8160): Decimal('-NaN'),
-        (0, 0, 9184): Decimal('sNaN'),
-        (1, 0, 9184): Decimal('-sNaN'),
-        (0, 0, 6112): Decimal('Infinity'),
-        (1, 0, 6112): Decimal('-Infinity'),
-    }.get((sign, dpd, exponent))
-    if v:
-        return v
-    return Decimal((sign, Decimal(dpd).as_tuple()[1], exponent))
+    return Decimal((sign, Decimal(digits).as_tuple()[1], exponent))
